@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:radar_chart_plus/radar_chart_plus.dart';
 
 void main() => runApp(const MyApp());
@@ -90,7 +91,15 @@ class DemoPage extends StatefulWidget {
 class _DemoPageState extends State<DemoPage> {
   double _axes = 6;
   double _series = 2;
-  bool _horizontalLabels = true;
+  bool _horizontalLabels = false;
+
+  bool enableOntap = true;
+
+  bool textBold = false;
+  FontWeight fontWeight = FontWeight.normal;
+
+  Color selectedLablelColor = Colors.white;
+  Color selected = Colors.blue;
 
   @override
   Widget build(BuildContext context) {
@@ -118,15 +127,15 @@ class _DemoPageState extends State<DemoPage> {
         ),
         centerTitle: false,
         actions: [
-          IconButton(
-            tooltip: widget.isDark ? 'Light mode' : 'Dark mode',
-            onPressed: widget.onToggleTheme,
-            icon: Icon(
-              widget.isDark
-                  ? Icons.light_mode_rounded
-                  : Icons.dark_mode_rounded,
-            ),
-          ),
+          // IconButton(
+          //   tooltip: widget.isDark ? 'Light mode' : 'Dark mode',
+          //   onPressed: widget.onToggleTheme,
+          //   icon: Icon(
+          //     widget.isDark
+          //         ? Icons.light_mode_rounded
+          //         : Icons.dark_mode_rounded,
+          //   ),
+          // ),
           const SizedBox(width: 8),
         ],
       ),
@@ -137,21 +146,23 @@ class _DemoPageState extends State<DemoPage> {
             Padding(
               padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
               child: SizedBox(
+
                 height: MediaQuery.of(context).size.height * 0.6,
                 child: RadarChartPlus(
+
                   key: ValueKey('$axesCount-$seriesCount'),
                   ticks: const [2, 4, 6, 8, 10],
                   labels: labels,
                   dataSets: dataSets,
-                  dotTapEnabled: true,
+                  dotTapEnabled: enableOntap,
                   tooltipStyle: const RadarTooltipStyle(),
                   horizontalLabels: _horizontalLabels,
                   maxWordsPerLine: 1,
                   labelSpacing: 4,
                   labelTextStyle: TextStyle(
-                    color: cs.onSurface.withValues(alpha: 0.75),
+                    color: selectedLablelColor,
                     fontSize: 11,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: fontWeight,
                   ),
                 ),
               ),
@@ -189,7 +200,8 @@ class _DemoPageState extends State<DemoPage> {
                     color: _seriesColors[1],
                   ),
                   const SizedBox(height: 16),
-                  Row(
+                  Column(
+                    spacing: 10,
                     children: [
                       Row(
                         children: [
@@ -210,6 +222,48 @@ class _DemoPageState extends State<DemoPage> {
                                 setState(() => _horizontalLabels = v),
                             activeColor: _seriesColors[2],
                           ),
+                          Spacer(),
+                          InkWell(
+                            onTap: () async {
+                              final pickedColor = await openColorPicker(
+                                context,
+                                selectedLablelColor,
+                              );
+
+                              if (pickedColor != null) {
+                                setState(() {
+                                  selectedLablelColor = pickedColor;
+                                });
+                              }
+                            },
+                            child: Container(
+                              height: MediaQuery.of(context).size.width * 0.08,
+                              width: MediaQuery.of(context).size.width * 0.08,
+                              decoration: BoxDecoration(
+                                border: BoxBorder.all(color: Colors.white70),
+                                color: selectedLablelColor,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                          ),
+
+                          InkWell(
+                            borderRadius: BorderRadius.circular(10),
+                            onTap: () {
+                              setState(() {
+                                fontWeight = fontWeight == FontWeight.bold
+                                    ? FontWeight.normal
+                                    : FontWeight.bold;
+                              });
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Icon(
+                                Icons.format_bold,
+                                color: selectedLablelColor,
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                       Row(
@@ -217,7 +271,7 @@ class _DemoPageState extends State<DemoPage> {
                           SizedBox(
                             width: 100,
                             child: Text(
-                              'Horizontal Labels',
+                              'Enable OnTap',
                               style: TextStyle(
                                 color: cs.onSurface.withValues(alpha: 0.7),
                                 fontSize: 13,
@@ -226,10 +280,33 @@ class _DemoPageState extends State<DemoPage> {
                             ),
                           ),
                           Switch(
-                            value: _horizontalLabels,
-                            onChanged: (v) =>
-                                setState(() => _horizontalLabels = v),
+                            value: enableOntap,
+                            onChanged: (v) => setState(() => enableOntap = v),
                             activeColor: _seriesColors[2],
+                          ),
+                          Spacer(),
+                          InkWell(
+                            onTap: () async {
+                              final pickedColor = await openColorPicker(
+                                context,
+                                selectedLablelColor,
+                              );
+
+                              if (pickedColor != null) {
+                                setState(() {
+                                  selectedLablelColor = pickedColor;
+                                });
+                              }
+                            },
+                            child: Container(
+                              height: MediaQuery.of(context).size.width * 0.08,
+                              width: MediaQuery.of(context).size.width * 0.08,
+                              decoration: BoxDecoration(
+                                border: BoxBorder.all(color: Colors.white70),
+                                color: selectedLablelColor,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
                           ),
                         ],
                       ),
@@ -240,6 +317,37 @@ class _DemoPageState extends State<DemoPage> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Future<Color?> openColorPicker(
+    BuildContext context,
+    Color initialColor,
+  ) async {
+    Color selectedColor = initialColor;
+
+    return await showDialog<Color>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        title: const Text("Pick a Color"),
+        content: SingleChildScrollView(
+          child: ColorPicker(
+            pickerColor: initialColor,
+            onColorChanged: (color) {
+              selectedColor = color; // ❌ no setState needed here
+            },
+          ),
+        ),
+        actions: [
+          TextButton(
+            child: const Text("Done"),
+            onPressed: () {
+              Navigator.pop(context, selectedColor); // ✅ return color
+            },
+          ),
+        ],
       ),
     );
   }
