@@ -235,8 +235,8 @@ class _DemoPageState extends State<DemoPage> {
                               }
                             },
                             child: Container(
-                              height: MediaQuery.of(context).size.width * 0.08,
-                              width: MediaQuery.of(context).size.width * 0.08,
+                              height: 50,
+                              width: 50,
                               decoration: BoxDecoration(
                                 border: BoxBorder.all(color: Colors.white70),
                                 color: selectedLablelColor,
