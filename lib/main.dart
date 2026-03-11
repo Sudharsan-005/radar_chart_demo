@@ -146,10 +146,8 @@ class _DemoPageState extends State<DemoPage> {
             Padding(
               padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
               child: SizedBox(
-
                 height: MediaQuery.of(context).size.height * 0.6,
                 child: RadarChartPlus(
-
                   key: ValueKey('$axesCount-$seriesCount'),
                   ticks: const [2, 4, 6, 8, 10],
                   labels: labels,
@@ -285,29 +283,6 @@ class _DemoPageState extends State<DemoPage> {
                             activeColor: _seriesColors[2],
                           ),
                           Spacer(),
-                          InkWell(
-                            onTap: () async {
-                              final pickedColor = await openColorPicker(
-                                context,
-                                selectedLablelColor,
-                              );
-
-                              if (pickedColor != null) {
-                                setState(() {
-                                  selectedLablelColor = pickedColor;
-                                });
-                              }
-                            },
-                            child: Container(
-                              height: MediaQuery.of(context).size.width * 0.08,
-                              width: MediaQuery.of(context).size.width * 0.08,
-                              decoration: BoxDecoration(
-                                border: BoxBorder.all(color: Colors.white70),
-                                color: selectedLablelColor,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                          ),
                         ],
                       ),
                     ],
